@@ -1,0 +1,17 @@
+{
+  "name": "adskip-for-deezer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Browser extension that skips the ads podcast hosts insert into episodes played on Deezer.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Babuh/adskip-for-deezer.git"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

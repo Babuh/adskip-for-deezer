@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <header>
+      <img src="../icons/icon-32.png" alt="" width="20" height="20">
+      <h1>AdSkip for Deezer</h1>
+      <label class="switch" title="Skip ads">
+        <input type="checkbox" id="enabled" aria-label="Skip ads">
+        <span></span>
+      </label>
+    </header>
+
+    <section>
+      <h2>This episode</h2>
+      <p id="status"></p>
+      <p id="detail" class="note" hidden></p>
+      <ol id="breaks"></ol>
+    </section>
+
+    <section class="stats">
+      <div><strong id="tab-count">0</strong><span>skipped in this tab</span></div>
+      <div><strong id="total-count">0</strong><span>skipped in total</span></div>
+      <div><strong id="total-time">0 s</strong><span>of ads avoided</span></div>
+    </section>
+
+    <section>
+      <h2>What to skip</h2>
+      <label class="option">
+        <input type="checkbox" data-category="inserted">
+        <span>Ads inserted by the podcast host</span>
+      </label>
+      <p class="note">Sponsor messages read by the hosts are part of the show and are never skipped.</p>
+    </section>
+
+    <footer>
+      <button id="copy" type="button">Copy debug info</button>
+      <a href="https://github.com/Babuh/adskip-for-deezer" target="_blank" rel="noopener">Source code</a>
+    </footer>
+
+    <script src="../lib/settings.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>
