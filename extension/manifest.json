@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AdSkip for Deezer",
-  "version": "0.1.0",
+  "version": "0.7.0",
   "description": "Skips the ads that podcast hosts insert into episodes played on deezer.com. No server, no tracking.",
   "homepage_url": "https://github.com/Babuh/adskip-for-deezer",
   "icons": {
@@ -11,7 +11,13 @@
     "128": "icons/icon-128.png"
   },
   "permissions": ["storage", "webRequest"],
-  "host_permissions": ["https://www.deezer.com/*", "*://*.audiomeans.fr/*"],
+  "host_permissions": [
+    "https://www.deezer.com/*",
+    "*://*.audiomeans.fr/*",
+    "*://media.radiofrance-podcast.net/*",
+    "*://*.acast.com/*",
+    "*://*.simplecastaudio.com/*"
+  ],
   "background": {
     "service_worker": "background.js",
     "scripts": ["background.js"]
@@ -30,8 +36,12 @@
       "js": [
         "lib/timing.js",
         "lib/skipper.js",
+        "lib/stitching.js",
         "lib/hosts.js",
         "hosts/audiomeans.js",
+        "hosts/radiofrance.js",
+        "hosts/acast.js",
+        "hosts/simplecast.js",
         "content/page.js"
       ],
       "run_at": "document_start",

@@ -8,6 +8,7 @@ const MESSAGES = {
   unavailable: 'Open a podcast on deezer.com to see its ads here.',
   idle: 'No podcast from a supported host is playing.',
   waiting: 'Episode found, waiting for the player.',
+  analysing: 'Episode found, working out where the ads are.',
   'no-ads': 'No inserted ads in this episode.',
   error: 'This episode has ads, but their position could not be verified. Nothing will be skipped.',
 };
@@ -52,7 +53,8 @@ function render(response) {
 
   const count = state.breaks.length;
   const paused = settings.enabled ? '' : ' Skipping is paused.';
-  $('status').textContent = `${count} inserted ${count === 1 ? 'ad' : 'ads'} in this episode.${paused}`;
+  const partial = state.incomplete ? ' Only part of the episode could be read, so there may be more.' : '';
+  $('status').textContent = `${count} inserted ${count === 1 ? 'ad' : 'ads'} in this episode.${paused}${partial}`;
   for (const ad of state.breaks) {
     const item = document.createElement('li');
     const time = document.createElement('span');

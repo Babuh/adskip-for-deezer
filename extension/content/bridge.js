@@ -43,6 +43,13 @@
       }
       skipped = Number(message.skipped) || 0;
       api.runtime.sendMessage({ type: 'state', state, skipped }).catch(() => {});
+    } else if (message.type === 'read') {
+      // The page asks for a stretch of a podcast file it can't read itself.
+      // The background decides whether the address is one of the hosts.
+      api.runtime
+        .sendMessage({ type: 'read', url: message.url, start: message.start, length: message.length })
+        .then((answer) => toPage({ type: 'read-done', id: message.id, ...answer }))
+        .catch(() => toPage({ type: 'read-done', id: message.id, ok: false, error: 'no-background' }));
     } else if (message.type === 'skipped') {
       const seconds = Number(message.seconds);
       if (seconds > 0 && seconds < 3600) {

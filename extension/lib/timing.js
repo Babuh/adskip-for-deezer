@@ -17,7 +17,11 @@
     return (byte - audioOffset) / bytesPerSecond;
   }
 
+  // How long the file the host described should turn out to be. It is what
+  // tells which player a URL belongs to, and whether a description fits the
+  // file actually being played.
   function expectedDuration(source) {
+    if (source.unit === 'seconds') return source.duration > 0 ? source.duration : null;
     if (source.unit !== 'bytes' || !(source.bytesPerSecond > 0)) return null;
     const audioBytes = source.totalBytes - source.audioOffset;
     return audioBytes > 0 ? audioBytes / source.bytesPerSecond : null;
@@ -82,7 +86,16 @@
       calibration = calibrate(source, duration);
       if (!calibration.ok) return { ok: false, reason: calibration.reason, calibration };
       toTime = (byte) => toSeconds(byte, calibration);
-    } else if (source.unit !== 'seconds') {
+    } else if (source.unit === 'seconds') {
+      // Positions given in seconds need no conversion, but they describe one
+      // particular file. A host that says how long that file is has to agree
+      // with what the browser is playing: otherwise this belongs to another
+      // episode, and its positions would land in the show.
+      const expected = expectedDuration(source);
+      if (expected !== null && Math.abs(expected - duration) > DRIFT_TOLERANCE) {
+        return { ok: false, reason: 'duration-mismatch', calibration };
+      }
+    } else {
       return { ok: false, reason: 'unknown-unit', calibration };
     }
 
