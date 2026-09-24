@@ -90,6 +90,13 @@
     }
   }
 
+  // A break is remembered by where it starts, not by which object described
+  // it. A partial answer is replaced by the complete one, which rebuilds them
+  // all, and an ad already skipped must not look pending again.
+  function mark(ad) {
+    return ad.start.toFixed(2);
+  }
+
   function isEnabled(ad) {
     return Boolean(settings && settings.categories[ad.category] !== false);
   }
@@ -233,7 +240,7 @@
       media.currentTime = hit.to;
       this.schedule();
       if (hit.retry) return;
-      this.skipped.add(hit.ad);
+      this.skipped.add(mark(hit.ad));
       skippedInTab += 1;
       log(`skipped the ad from ${hit.ad.start.toFixed(2)}s to ${hit.ad.end.toFixed(2)}s`);
       send({ type: 'skipped', seconds: hit.to - hit.from });
@@ -250,7 +257,7 @@
         host: this.source ? this.source.host : null,
         problem: this.problem,
         duration: this.duration,
-        breaks: (this.breaks || []).map((ad) => ({ ...ad, skipped: this.skipped.has(ad) })),
+        breaks: (this.breaks || []).map((ad) => ({ ...ad, skipped: this.skipped.has(mark(ad)) })),
         calibration: this.calibration,
         incomplete: (this.source && this.source.incomplete) || null,
         params: (this.source && this.source.paramNames) || [],

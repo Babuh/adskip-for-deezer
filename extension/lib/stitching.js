@@ -254,7 +254,7 @@
     ]);
 
     const delta = served.audioBytes - origin.audioBytes;
-    if (delta === 0) return { ...(await layoutOf(served)), ranges: [], probes: reader.probes };
+    if (delta === 0) return { ...(await layoutOf(served)), ranges: [], probes: reader.probes, bytes: reader.taken };
     if (delta < 0) throw fail('source-not-smaller');
     if (origin.audioBytes < 4 * CHUNK) throw fail('source-too-short');
 
@@ -421,7 +421,7 @@
         ...shape,
         ranges: found.map((ad) => [ad.start, ad.end]),
         incomplete: 'unreadable-end',
-        probes: reader.probes,
+        probes: reader.probes, bytes: reader.taken,
       };
     }
 
@@ -437,7 +437,7 @@
     found.sort((a, b) => a.start - b.start);
     const inserted = found.reduce((total, ad) => total + (ad.end - ad.start), 0);
     if (inserted !== delta) throw fail('incomplete-alignment');
-    return { ...shape, ranges: found.map((ad) => [ad.start, ad.end]), probes: reader.probes };
+    return { ...shape, ranges: found.map((ad) => [ad.start, ad.end]), probes: reader.probes, bytes: reader.taken };
   }
 
   root.AdSkip = root.AdSkip || {};

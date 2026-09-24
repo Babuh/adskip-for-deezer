@@ -45,7 +45,7 @@ With a constant bitrate, turning a byte into a timestamp is a single division: `
 
 Acast is even more forthcoming. It assembles a file for each listener and publishes the recipe next to it, at the same address with a `.json` extension: every segment, in seconds, marked as either the episode or something the stitcher added. On one episode of *Legend* that comes to four breaks and 2 minutes 18 of ads, read in a single request, with nothing to measure.
 
-Simplecast says nothing and publishes nothing, but its API names the original episode, so the assembled file and the original can be compared. That one comes with a catch, described under Limitations.
+Simplecast says nothing and publishes nothing, but its API names the original episode, so the assembled file and the original can be compared. On an episode of *L'After Foot* that placed a pre-roll and a post-roll in ten requests.
 
 Radio France says nothing of the sort either, but the URL it serves names the original episode, which is still downloadable without the ads. The extension compares the two files: it reads four kilobytes at the same place in each, and depending on whether they match, looks earlier or later. About fifteen of those narrow down where a block was inserted. On a 48 minute episode of *Affaires sensibles*, seven range requests and 28 kB were enough to place a 29.5 second pre-roll, before playback started.
 
@@ -87,7 +87,7 @@ Then open a podcast on [deezer.com](https://www.deezer.com) and press play. The 
 |---|---|
 | Browsers | Firefox 128+, Chrome 121+ and other Chromium browsers |
 | Player | Deezer web player, www.deezer.com |
-| Podcast hosts | Audiomeans, Acast, Radio France |
+| Podcast hosts | Audiomeans, Acast, Radio France, Simplecast |
 
 The Deezer desktop and mobile apps are not supported: they can't run browser extensions.
 
@@ -98,7 +98,7 @@ This works because of how the hosts happen to serve their files: one puts the ad
 Also worth knowing:
 
 - Only podcasts from supported hosts are handled. Plenty of shows on Deezer use other hosts, like Acast, Ausha, Megaphone or ART19, whose URLs haven't been studied yet.
-- **Simplecast is written but not yet seen working.** Reading the file being played needs the background, since a page isn't allowed to read it at all, and working out where the breaks are costs a few megabytes rather than a few kilobytes. Both ends of a real episode have been read and its structure measured, but no listen has yet been sat through end to end, so it stays out of the list above until one has.
+- **Simplecast costs more than the others.** A page isn't allowed to read the file being played at all, so the extension reads it from its background, and placing the breaks costs a few hundred kilobytes rather than a few. Its assemblies are also built as they are listened to: when the end of the file is not there yet, the pre-roll is still placed exactly and the rest is given up on, and the popup says so.
 - A host that neither describes its ads nor leaves the original episode reachable can't be supported this way at all. Audion, which serves shows on Deezer from `traffic.360.audion.fm`, is the case that has been looked at: the file is easy to read, but nothing in it or beside it says where the ads are. [docs/adding-a-host.md](docs/adding-a-host.md) records what was ruled out.
 - A post-roll is skipped like any other break, which lands the playhead at the end of the episode.
 - If a file turns out to be variable bitrate, bytes can't be turned into timestamps reliably, and the episode is left alone.

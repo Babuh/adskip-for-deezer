@@ -437,6 +437,11 @@ test('skips the pre-roll on a partial answer, then takes the rest when it lands'
   assert.equal(state.status, 'active');
   assert.equal(state.breaks.length, 2, 'both breaks are known once it is done');
   near(media.currentTime, 29.58);
+  assert.equal(
+    state.breaks[0].skipped,
+    true,
+    'the pre-roll stays marked as skipped although the complete answer rebuilt it',
+  );
 
   // The mid-roll, found after the pre-roll had already been handed over and
   // acted on, is still skipped.
