@@ -61,6 +61,25 @@ It reads both files with range requests, a few kilobytes at a time, and throws w
 
 `locate` also takes `sizes`, a length per address that the caller already knows for certain. Pass one when asking the file itself would be wrong rather than merely slow.
 
+## When it cannot be done
+
+Some hosts give nothing away, and it is worth recognising one early rather than working at it. Audion is the example, and this is what was ruled out on it, in the order worth trying:
+
+| Looked for | Found |
+|---|---|
+| Positions in the URL | Only a stitch id, a session id and a signed token |
+| A manifest beside the file | Every `.json` address redirects to the ad router |
+| The original episode | Its storage refuses everything, its own root included |
+| Another assembly of the same episode | The token is bound to one, and any other has ads of its own |
+| Markers in the stream | No per segment Xing header, no padding at the joins |
+| A frame level signature | Every part of the file is the same 128 kbit/s joint stereo profile, ads included |
+| The host's own player | It follows the redirect and plays what it is given, keeping the session id for tracking. It is told no more than Deezer is |
+| The host's API | Every episode route answers 401 |
+
+The player is the one worth checking early on any host, and checking it settles the question. A platform that lets its customers show a banner during the ad has to tell the player when the ad is: Acast does, which is why its manifest is public. When the player is told nothing, the positions exist only inside the stitcher and no client will ever learn them.
+
+Two things it does give, which are worth knowing about in general. The `content-disposition` header names the episode, which is how to find out what you are listening to. And the ID3 tag kept from the original carries `iTunSMPB`, whose sample count gives the length of the show without the ads: comparing it with the duration the browser reports says exactly how much was inserted. That is enough to know an episode has three minutes of ads in it, and not enough to skip a second of them.
+
 ## 3. Register it
 
 In `extension/manifest.json`:

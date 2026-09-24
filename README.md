@@ -99,7 +99,7 @@ Also worth knowing:
 
 - Only podcasts from supported hosts are handled. Plenty of shows on Deezer use other hosts, like Acast, Ausha, Megaphone or ART19, whose URLs haven't been studied yet.
 - **Simplecast is written but not yet seen working.** Reading the file being played needs the background, since a page isn't allowed to read it at all, and working out where the breaks are costs a few megabytes rather than a few kilobytes. Both ends of a real episode have been read and its structure measured, but no listen has yet been sat through end to end, so it stays out of the list above until one has.
-- A host that neither describes its ads nor leaves the original episode reachable can't be supported this way at all.
+- A host that neither describes its ads nor leaves the original episode reachable can't be supported this way at all. Audion, which serves shows on Deezer from `traffic.360.audion.fm`, is the case that has been looked at: the file is easy to read, but nothing in it or beside it says where the ads are. [docs/adding-a-host.md](docs/adding-a-host.md) records what was ruled out.
 - A post-roll is skipped like any other break, which lands the playhead at the end of the episode.
 - If a file turns out to be variable bitrate, bytes can't be turned into timestamps reliably, and the episode is left alone.
 - The playhead jumps over the ads, so they still show on the progress bar.
