@@ -53,15 +53,30 @@
     return readLength(response.headers.get('Content-Length'));
   }
 
+  // A request that hangs without ever answering would leave the episode
+  // unhandled until the page is reloaded. A host that stalls rather than
+  // refuses has already been seen, so every request is given a limit.
+  const PATIENCE = 20000;
+
   // A redirect is refused rather than followed. A host that assembles an
   // episode per listen answers one with a fresh assembly: different ads, at
   // different positions, in a file of a different length. Following it would
   // hand back bytes that look perfectly valid and belong to another file.
   async function follow(url, options) {
+    const giveUp = typeof AbortController === 'function' ? new AbortController() : null;
+    const timer = giveUp ? setTimeout(() => giveUp.abort(), PATIENCE) : null;
     try {
-      return await fetch(url, { credentials: 'omit', cache: 'no-store', redirect: 'error', ...options });
+      return await fetch(url, {
+        credentials: 'omit',
+        cache: 'no-store',
+        redirect: 'error',
+        ...(giveUp ? { signal: giveUp.signal } : {}),
+        ...options,
+      });
     } catch {
       throw fail('redirected-or-unreachable');
+    } finally {
+      if (timer) clearTimeout(timer);
     }
   }
 
@@ -348,7 +363,7 @@
     const shape = await layoutOf(served);
     const found = [];
     const tell = () => {
-      if (!options.onPartial) return;
+      if (!options.onPartial || found.length === 0) return;
       const sorted = [...found].sort((a, b) => a.start - b.start);
       options.onPartial({ ...shape, ranges: sorted.map((ad) => [ad.start, ad.end]) });
     };

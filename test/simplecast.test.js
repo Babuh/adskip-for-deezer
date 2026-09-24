@@ -30,10 +30,12 @@ function bare(address) {
   return address.split('?')[0];
 }
 
+// Waits for the complete answer: a partial one arrives first now, and it is
+// deliberately not the one these tests are about.
 function resolved(address) {
   return new Promise((done) => {
     hosts.onResolved((at, source) => {
-      if (at === address) done(source);
+      if (at === address && !source.partial) done(source);
     });
   });
 }

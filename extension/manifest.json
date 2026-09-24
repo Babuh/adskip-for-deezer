@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AdSkip for Deezer",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Skips the ads that podcast hosts insert into episodes played on deezer.com. No server, no tracking.",
   "homepage_url": "https://github.com/Babuh/adskip-for-deezer",
   "icons": {

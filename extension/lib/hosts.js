@@ -58,6 +58,33 @@
     }
   }
 
+  // One at a time. Working a file out can mean reading megabytes of it, and a
+  // page is handed several addresses at once: run them together and they
+  // compete for bandwidth with the audio the player is trying to stream.
+  let queue = Promise.resolve();
+
+  // Nothing may wait forever. A read that never comes back would otherwise
+  // hold the queue shut for as long as the page is open, and the extension
+  // would do nothing at all until it was reloaded.
+  let deadline = 45000;
+
+  // The only reason to change it is to watch what happens when it is reached
+  // without waiting three quarters of a minute for it.
+  function patience(ms) {
+    if (ms > 0) deadline = ms;
+  }
+
+  function within(work) {
+    return new Promise((done, fail) => {
+      const timer = setTimeout(() => fail(new Error('took-too-long')), deadline);
+      const settle = (finish) => (value) => {
+        clearTimeout(timer);
+        finish(value);
+      };
+      Promise.resolve().then(work).then(settle(done), settle(fail));
+    });
+  }
+
   function start(address, source) {
     if (started.has(address)) return;
     started.add(address);
@@ -65,8 +92,14 @@
     // How long it took is worth keeping: a pre-roll plays for exactly as long
     // as this, so a slow answer is a thing to see rather than to guess at.
     const began = Date.now();
-    Promise.resolve()
-      .then(() => resolve(tools))
+
+    // Anything worked out before the end is passed on straight away, so a
+    // pre-roll can be skipped while the rest is still being looked for.
+    const onPartial = (partial) =>
+      remember(address, { ...rest, ...partial, partial: true, ms: Date.now() - began });
+
+    queue = queue
+      .then(() => within(() => resolve({ ...tools, onPartial })))
       .then((result) => ({ ...rest, ...result }))
       .catch((error) => ({
         ...rest,
@@ -98,5 +131,5 @@
   }
 
   root.AdSkip = root.AdSkip || {};
-  root.AdSkip.hosts = { register, parse, onResolved, useTools, pause };
+  root.AdSkip.hosts = { register, parse, onResolved, useTools, pause, patience };
 })(globalThis);

@@ -156,6 +156,8 @@ The assembly is read by its address alone, with the query thrown away. That quer
 
 Only one file is ever worked out at a time. A page can be handed several addresses at once, Deezer asks for more than one, and comparisons running together would compete for bandwidth with the audio the player is trying to stream.
 
+Which makes it all the more important that none of them can wait forever. A request that hangs rather than refuses, or a background script shut down between the question and its answer, would otherwise hold that queue closed for as long as the page stays open, and the extension would do nothing at all until it was reloaded. Every request gives up after twenty seconds, every read waiting on the background gives up after twenty, and a whole comparison gives up after forty five. Giving up is reported like any other failure.
+
 The background will only read from the podcast hosts. An address the page made up is refused, so this can't become a way to fetch anything at all, and a read large enough to be a download is refused too.
 
 Two traps are worth knowing about, and they are the same trap twice.

@@ -36,7 +36,7 @@ function variant(name) {
 function resolved(address) {
   return new Promise((done) => {
     hosts.onResolved((resolvedAddress, source) => {
-      if (resolvedAddress === address) done(source);
+      if (resolvedAddress === address && !source.partial) done(source);
     });
   });
 }

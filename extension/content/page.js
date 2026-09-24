@@ -32,10 +32,28 @@
     return bytes;
   }
 
+  // A read that never comes back would leave whoever asked waiting for the
+  // life of the page. The background can be shut down between the question
+  // and the answer, so every read gives up on its own after a while.
+  const READ_TIMEOUT = 20000;
+
   function askBackground(url, start, length) {
     return new Promise((done, fail) => {
       const id = `r${(nextRead += 1)}`;
-      reads.set(id, { done, fail });
+      const timer = setTimeout(() => {
+        reads.delete(id);
+        fail(new Error('no-answer'));
+      }, READ_TIMEOUT);
+      reads.set(id, {
+        done: (value) => {
+          clearTimeout(timer);
+          done(value);
+        },
+        fail: (error) => {
+          clearTimeout(timer);
+          fail(error);
+        },
+      });
       send({ type: 'read', id, url, start, length });
     });
   }
