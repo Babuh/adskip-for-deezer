@@ -87,12 +87,39 @@ for (const input of categoryInputs) {
   });
 }
 
+// Firefox treats the sites an extension asks for as optional, and an update
+// that asks for a new one can quietly withdraw the ones already allowed. The
+// extension then sees nothing and looks broken, with no way to tell from the
+// outside. So it says which sites it is actually allowed to look at.
+async function allowedSites() {
+  const wanted = api.runtime.getManifest().host_permissions || [];
+  const state = {};
+  for (const origin of wanted) {
+    try {
+      state[origin] = await api.permissions.contains({ origins: [origin] });
+    } catch {
+      state[origin] = null;
+    }
+  }
+  return state;
+}
+
+function reportBlocked(state) {
+  const missing = Object.keys(state).filter((origin) => state[origin] === false);
+  const line = $('blocked');
+  line.hidden = missing.length === 0;
+  if (missing.length === 0) return;
+  const which = missing.map((origin) => origin.replace(/^\*:\/\/|\/\*$/g, '')).join(', ');
+  line.textContent = `Firefox is not letting the extension see ${which}. Nothing can be skipped there until it is allowed again, in Add-ons and themes, under Permissions.`;
+}
+
 $('copy').addEventListener('click', async () => {
   const button = $('copy');
   const info = {
     version: api.runtime.getManifest().version,
     browser: navigator.userAgent,
     settings,
+    sites: await allowedSites(),
     tab: current,
   };
   try {
@@ -122,6 +149,7 @@ async function init() {
     input.checked = settings.categories[input.dataset.category] !== false;
   }
   renderStats();
+  allowedSites().then(reportBlocked);
 
   const [tab] = await api.tabs.query({ active: true, currentWindow: true });
   tabId = tab ? tab.id : null;

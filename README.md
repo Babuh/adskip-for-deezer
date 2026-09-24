@@ -104,6 +104,12 @@ Also worth knowing:
 - If a file turns out to be variable bitrate, bytes can't be turned into timestamps reliably, and the episode is left alone.
 - The playhead jumps over the ads, so they still show on the progress bar.
 
+## When nothing is skipped
+
+The popup says what it is doing and why, and the **Copy debug info** button underneath gives the whole picture.
+
+One cause is worth knowing about because it looks exactly like a broken extension. Firefox treats the sites an extension asks for as optional, and an update that asks for a new one can withdraw the ones you had already allowed. The extension then sees nothing at all. The popup says so in that case, and the sites are put back under Permissions, in Add-ons and themes.
+
 ## Contributing
 
 Anyone can help, and a few things would make a big difference:
